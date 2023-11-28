@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: 5744
+    username: postgres
+    url: jdbc:postgresql://localhost:5433/user
+
+  liquibase:
+    change-log: classpath:liquibase/main-changelog.yml
+
+application:
+  security:
+    jwt:
+      secretKey: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B59
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
+
+server:
+  port : 8081
