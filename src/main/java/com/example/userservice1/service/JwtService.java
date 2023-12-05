@@ -31,6 +31,10 @@ public class JwtService {
         return extractClaim(jwtToken, Claims::getSubject);
     }
 
+    public Integer extractId(String jwtToken) {
+        return Integer.valueOf(extractClaim(jwtToken, Claims::getId));
+    }
+
     // single claim from payload
     public <T> T extractClaim(String jwtToken, Function<Claims,T> claimsTFunction) {
         final Claims claims = extractAllClaims(jwtToken);

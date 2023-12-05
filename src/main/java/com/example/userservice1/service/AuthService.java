@@ -96,6 +96,15 @@ public class AuthService {
                 .build();
     }
 
+    public void deleteUser(Integer id) {
+        Token token = tokenRepo.findById(id).orElse(null);
+        if (token != null) {
+            tokenRepo.delete(token);
+        }
+        userRepo.deleteById(id);
+//        tokenRepo.deleteById(id);
+    }
+
 
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
