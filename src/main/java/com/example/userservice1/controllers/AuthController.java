@@ -5,6 +5,8 @@ import com.example.userservice1.dto.AuthenticationResponse;
 import com.example.userservice1.dto.RegisterRequest;
 import com.example.userservice1.entity.User;
 import com.example.userservice1.service.AuthService;
+import com.example.userservice1.service.JwtService;
+import com.example.userservice1.threads.ThreadLocalPayload;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
@@ -43,5 +46,11 @@ public class AuthController {
         authService.deleteUser(id);
         kafkaTemplate.send("user-topic", "user deleted");
         return HttpStatus.OK;
+    }
+
+    @GetMapping("/token")
+    public String printToken(@RequestHeader String token){
+        ThreadLocalPayload.setId(jwtService.extractId(token));
+        return ThreadLocalPayload.getId();
     }
 }

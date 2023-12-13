@@ -1,5 +1,6 @@
 package com.example.userservice1.service;
 
+import com.example.userservice1.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,8 +32,8 @@ public class JwtService {
         return extractClaim(jwtToken, Claims::getSubject);
     }
 
-    public Integer extractId(String jwtToken) {
-        return Integer.valueOf(extractClaim(jwtToken, Claims::getId));
+    public String extractId(String jwtToken) {
+        return extractClaim(jwtToken, Claims::getId);
     }
 
     // single claim from payload
@@ -41,29 +42,29 @@ public class JwtService {
         return claimsTFunction.apply(claims);
     }
 
-    public String generateJwt(UserDetails userDetails) {
-        return generateJwt(new HashMap<>(), userDetails);
+    public String generateJwt(User user) {
+        return generateJwt(new HashMap<>(), user);
     }
 
 
 
-    public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
-        String s = Jwts.builder()
+    public String buildToken(Map<String, Object> extraClaims, User user, long expiration) {
+        return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setId(String.valueOf(user.getId()))
+                .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+expiration))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
-        return s;
     }
 
-    public String generateJwt(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+    public String generateJwt(Map<String, Object> extraClaims, User user) {
+        return buildToken(extraClaims, user, jwtExpiration);
     }
 
-    public String generateRefreshJwt(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+    public String generateRefreshJwt(User user) {
+        return buildToken(new HashMap<>(), user, refreshExpiration);
     }
 
     public boolean isValid(String jwtToken, UserDetails userDetails) {
@@ -79,7 +80,7 @@ public class JwtService {
         return extractClaim(jwtToken, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String jwtToken) {
+    public Claims extractAllClaims(String jwtToken) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getKey())
@@ -89,7 +90,7 @@ public class JwtService {
 
     }
 
-    private Key getKey() {
+    public Key getKey() {
         byte[] keyBytes = Decoders.BASE64URL.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
